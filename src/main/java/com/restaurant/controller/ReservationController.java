@@ -51,6 +51,17 @@ public class ReservationController {
         return updatedReservation != null ? ResponseEntity.ok(updatedReservation) : ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/bycode/{idreserv}")
+    public ResponseEntity<Reservation> updateReservationByCode(@PathVariable String idreserv, @RequestBody Reservation reservationDetails) {
+        Reservation existingReservation = reservationService.findByIdreserv(idreserv);
+        if (existingReservation == null) {
+            return ResponseEntity.notFound().build();
+        }
+        reservationDetails.setId(existingReservation.getId());
+        Reservation updatedReservation = reservationService.updateReservation(existingReservation.getId(), reservationDetails);
+        return ResponseEntity.ok(updatedReservation);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
