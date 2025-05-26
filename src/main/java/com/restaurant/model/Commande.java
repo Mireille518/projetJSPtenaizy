@@ -23,7 +23,7 @@ public class Commande {
     private Menu menu;
 
     @Column(nullable = false)
-    private int nomcli;
+    private String nomcli;
 
     @Column(nullable = false)
     private String typecom;
