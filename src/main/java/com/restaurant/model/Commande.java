@@ -19,7 +19,7 @@ public class Commande {
     private String idcom;
 
     @ManyToOne
-    @JoinColumn(name = "idplat", nullable = false)
+    @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
 
     @Column(nullable = false)
@@ -29,12 +29,13 @@ public class Commande {
     private String typecom;
 
     @ManyToOne
-    @JoinColumn(name = "idtable")
+    @JoinColumn(name = "table_id")
     private Table table;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date datecom;
 
+    @Column(nullable = false)
     private int quantite;
 } 
