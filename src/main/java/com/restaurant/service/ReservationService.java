@@ -6,6 +6,8 @@ import com.restaurant.repository.ReservationRepository;
 import com.restaurant.repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,9 @@ public class ReservationService {
     @Autowired
     private TableRepository tableRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
@@ -27,7 +32,12 @@ public class ReservationService {
     }
 
     public Reservation findByIdreserv(String idreserv) {
-        return reservationRepository.findByIdreserv(idreserv);
+        Reservation reservation = reservationRepository.findByIdreserv(idreserv);
+        if (reservation != null) {
+            // Force le chargement de la table
+            reservation.getTable().getDesignation();
+        }
+        return reservation;
     }
 
     public Reservation createReservation(Reservation reservation) {
@@ -55,7 +65,12 @@ public class ReservationService {
         Optional<Reservation> reservation = reservationRepository.findById(id);
         if (reservation.isPresent()) {
             Reservation existingReservation = reservation.get();
-            existingReservation.setTable(reservationDetails.getTable());
+            
+            // Récupérer la table depuis la base de données
+            Table table = tableRepository.findById(reservationDetails.getTable().getId())
+                .orElseThrow(() -> new RuntimeException("Table not found"));
+            
+            existingReservation.setTable(table);
             existingReservation.setDateReserv(reservationDetails.getDateReserv());
             existingReservation.setDateReserve(reservationDetails.getDateReserve());
             existingReservation.setNomcli(reservationDetails.getNomcli());
